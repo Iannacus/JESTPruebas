@@ -1,4 +1,4 @@
-import db from "../services/db.services.js";
+import db from "../../services/db.services.js";
 import faker from "faker";
 
 describe("Servicio findAll de DB", () => {
@@ -89,13 +89,21 @@ describe("Servicio create", () => {
 
 describe("Servicio update", () => {
     let newUser = {};
+    let updateUser = {};
     let userCreated = {};
 
     beforeEach(async () => {
         await db.clear(); //Limpiar la DB
 
+        updateUser = {
+            id: 0,
+            firstname: "ian",
+            lastname: "rosas",
+            email: "ian@gmail.com"
+        };
+
         newUser = {
-            id: 12,
+            id: 0,
             firstname: faker.name.firstName(),
             lastname: faker.name.lastName(),
             email: faker.internet.email().toLowerCase()
@@ -106,15 +114,28 @@ describe("Servicio update", () => {
     });
 
     it("Debería de regresar un objeto de tipo User al actualizar", async () => {
+
+        const user = await db.update(updateUser);
+
+        expect(user).toMatchObject({
+            firstname: expect.any(String),
+            lastname: expect.any(String),
+            email: expect.any(String),
+            id: expect.any(Number)
+        });
         
     });
 
     it("Debería de regresar un objeto de tipo User con los valores que se acaban de actualizar", async () => {
+
+        const user = await db.update(updateUser);
+        console.log('respuesta', user);
+
+        expect(user).toMatchObject(updateUser);
         
     });
 
-    it("Debería de arrojar un error al tratar de actualizar un usuario que no existe en la DB", () => {
-
+    it("Debería de arrojar un error al tratar de actualizar un usuario que no existe en la DB", async () => {
     });
 });
 
@@ -137,10 +158,15 @@ describe("Servicio delete", () => {
     });
 
     it("Debería de regresar true al eliminar un usuario", async () => {
+
+        const boolean = await db.delete(newUser.id);
+        
+        expect(boolean).toBe(true);
         
     });
 
     it("Debería de regresar false al tratar de eliminar un usuario con un id que no existe en la DB", async () => {
-        
+        const boolean = await db.delete(0);
+        expect(boolean).toBe(true);
     });
-});
+}); 
